@@ -46,6 +46,8 @@ public class Nova {
                 }
             } else if (command.startsWith("mark ")) {
                 markTask(command.substring(5), tasks, completed, taskCount);
+            } else if (command.startsWith("unmark ")) {
+                unmarkTask(command.substring(7), tasks, completed, taskCount);
             } else if (taskCount < MAX_TASKS) {
                 tasks[taskCount] = command;
                 taskCount++;
@@ -68,6 +70,23 @@ public class Nova {
             completed[index] = true;
             System.out.println(" Nice! I've marked this task as done:");
             System.out.println("   [X] " + tasks[index]);
+        } catch (NumberFormatException e) {
+            System.out.println(" Please provide a valid task number.");
+        }
+    }
+
+    /** Marks the task at the one-based index in an {@code unmark} command as not done. */
+    private static void unmarkTask(String taskNumber, String[] tasks, boolean[] completed, int taskCount) {
+        try {
+            int index = Integer.parseInt(taskNumber) - 1;
+            if (index < 0 || index >= taskCount) {
+                System.out.println(" Task number is out of range.");
+                return;
+            }
+
+            completed[index] = false;
+            System.out.println(" OK, I've marked this task as not done yet:");
+            System.out.println("   [ ] " + tasks[index]);
         } catch (NumberFormatException e) {
             System.out.println(" Please provide a valid task number.");
         }
