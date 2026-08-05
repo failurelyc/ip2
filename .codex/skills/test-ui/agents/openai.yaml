@@ -1,0 +1,4 @@
+interface:
+  display_name: "Test UI"
+  short_description: "Run scripted console UI tests and compare exact outputs"
+  default_prompt: "Use $test-ui to run the project UI test plan, compare every command output exactly, stop at the first failure, and show the console transcript."
