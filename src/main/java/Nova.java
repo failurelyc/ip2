@@ -25,6 +25,7 @@ public class Nova {
 
         Scanner scanner = new Scanner(System.in);
         String[] tasks = new String[MAX_TASKS];
+        boolean[] completed = new boolean[MAX_TASKS];
         int taskCount = 0;
 
         while (scanner.hasNextLine()) {
@@ -38,9 +39,13 @@ public class Nova {
             }
 
             if (command.equals("list")) {
+                System.out.println(" Here are the tasks in your list:");
                 for (int i = 0; i < taskCount; i++) {
-                    System.out.println(" " + (i + 1) + ". " + tasks[i]);
+                    String status = completed[i] ? "X" : " ";
+                    System.out.println(" " + (i + 1) + ".[" + status + "] " + tasks[i]);
                 }
+            } else if (command.startsWith("mark ")) {
+                markTask(command.substring(5), tasks, completed, taskCount);
             } else if (taskCount < MAX_TASKS) {
                 tasks[taskCount] = command;
                 taskCount++;
@@ -48,6 +53,23 @@ public class Nova {
             }
 
             System.out.println(SEPARATOR);
+        }
+    }
+
+    /** Marks the task at the one-based index in a {@code mark} command as done. */
+    private static void markTask(String taskNumber, String[] tasks, boolean[] completed, int taskCount) {
+        try {
+            int index = Integer.parseInt(taskNumber) - 1;
+            if (index < 0 || index >= taskCount) {
+                System.out.println(" Task number is out of range.");
+                return;
+            }
+
+            completed[index] = true;
+            System.out.println(" Nice! I've marked this task as done:");
+            System.out.println("   [X] " + tasks[index]);
+        } catch (NumberFormatException e) {
+            System.out.println(" Please provide a valid task number.");
         }
     }
 }
