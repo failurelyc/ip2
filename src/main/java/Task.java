@@ -30,4 +30,15 @@ public class Task {
     public String getDescription() {
         return description;
     }
+
+    /** Returns the one-letter type marker used when displaying this task. */
+    public String getTypeIcon() {
+        return "T";
+    }
+
+    /** Returns the task in the format used by the list and confirmation messages. */
+    @Override
+    public String toString() {
+        return "[" + getTypeIcon() + "][" + getStatusIcon() + "] " + description;
+    }
 }

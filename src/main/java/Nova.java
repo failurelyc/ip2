@@ -40,21 +40,44 @@ public class Nova {
             if (command.equals("list")) {
                 System.out.println(" Here are the tasks in your list:");
                 for (int i = 0; i < taskCount; i++) {
-                    System.out.println(" " + (i + 1) + ".[" + tasks[i].getStatusIcon() + "] "
-                            + tasks[i].getDescription());
+                    System.out.println(" " + (i + 1) + "." + tasks[i]);
                 }
             } else if (command.startsWith("mark ")) {
                 markTask(command.substring(5), tasks, taskCount);
             } else if (command.startsWith("unmark ")) {
                 unmarkTask(command.substring(7), tasks, taskCount);
             } else if (taskCount < MAX_TASKS) {
-                tasks[taskCount] = new Task(command);
+                tasks[taskCount] = parseTask(command);
                 taskCount++;
-                System.out.println(" added: " + command);
+                System.out.println(" Got it. I've added this task:");
+                System.out.println("   " + tasks[taskCount - 1]);
+                System.out.println(" Now you have " + taskCount + " tasks in the list.");
             }
 
             System.out.println(SEPARATOR);
         }
+    }
+
+    /** Converts a user command into the appropriate task subtype. */
+    private static Task parseTask(String command) {
+        if (command.startsWith("deadline ")) {
+            String body = command.substring(9);
+            int marker = body.indexOf(" /by ");
+            if (marker >= 0) {
+                return new Deadline(body.substring(0, marker), body.substring(marker + 5));
+            }
+        } else if (command.startsWith("event ")) {
+            String body = command.substring(6);
+            int fromMarker = body.indexOf(" /from ");
+            int toMarker = body.indexOf(" /to ");
+            if (fromMarker >= 0 && toMarker > fromMarker) {
+                return new Event(body.substring(0, fromMarker),
+                        body.substring(fromMarker + 7, toMarker), body.substring(toMarker + 5));
+            }
+        } else if (command.startsWith("todo ")) {
+            return new Todo(command.substring(5));
+        }
+        return new Todo(command);
     }
 
     /** Marks the task at the one-based index in a {@code mark} command as done. */
