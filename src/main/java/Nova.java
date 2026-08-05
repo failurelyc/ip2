@@ -47,11 +47,18 @@ public class Nova {
             } else if (command.startsWith("unmark ")) {
                 unmarkTask(command.substring(7), tasks, taskCount);
             } else if (taskCount < MAX_TASKS) {
-                tasks[taskCount] = parseTask(command);
-                taskCount++;
-                System.out.println(" Got it. I've added this task:");
-                System.out.println("   " + tasks[taskCount - 1]);
-                System.out.println(" Now you have " + taskCount + " tasks in the list.");
+                try {
+                    Task task = parseTask(command);
+                    tasks[taskCount] = task;
+                    taskCount++;
+                    System.out.println(" Got it. I've added this task:");
+                    System.out.println("   " + task);
+                    System.out.println(" Now you have " + taskCount + " tasks in the list.");
+                } catch (IllegalArgumentException e) {
+                    System.out.println(" OOPS!!! " + e.getMessage());
+                }
+            } else {
+                System.out.println(" OOPS!!! Your task list is full.");
             }
 
             System.out.println(SEPARATOR);
@@ -64,20 +71,41 @@ public class Nova {
             String body = command.substring(9);
             int marker = body.indexOf(" /by ");
             if (marker >= 0) {
-                return new Deadline(body.substring(0, marker), body.substring(marker + 5));
+                return new Deadline(requireDescription(body.substring(0, marker), "deadline"),
+                        requireValue(body.substring(marker + 5), "deadline"));
             }
+            throw new IllegalArgumentException("A deadline needs a description and a /by date.");
         } else if (command.startsWith("event ")) {
             String body = command.substring(6);
             int fromMarker = body.indexOf(" /from ");
             int toMarker = body.indexOf(" /to ");
             if (fromMarker >= 0 && toMarker > fromMarker) {
-                return new Event(body.substring(0, fromMarker),
-                        body.substring(fromMarker + 7, toMarker), body.substring(toMarker + 5));
+                return new Event(requireDescription(body.substring(0, fromMarker), "event"),
+                        requireValue(body.substring(fromMarker + 7, toMarker), "event start time"),
+                        requireValue(body.substring(toMarker + 5), "event end time"));
             }
-        } else if (command.startsWith("todo ")) {
-            return new Todo(command.substring(5));
+            throw new IllegalArgumentException("An event needs a description, /from time, and /to time.");
+        } else if (command.equals("todo") || command.startsWith("todo ")) {
+            String description = command.equals("todo") ? "" : command.substring(5);
+            return new Todo(requireDescription(description, "todo"));
         }
-        return new Todo(command);
+        throw new IllegalArgumentException("I don't recognise that command. Try todo, deadline, event, list, mark, unmark, or bye.");
+    }
+
+    /** Returns a non-blank task description or reports the invalid input. */
+    private static String requireDescription(String value, String taskType) {
+        if (value.trim().isEmpty()) {
+            throw new IllegalArgumentException("The description of a " + taskType + " cannot be empty.");
+        }
+        return value;
+    }
+
+    /** Returns a non-blank command field or reports the invalid input. */
+    private static String requireValue(String value, String fieldName) {
+        if (value.trim().isEmpty()) {
+            throw new IllegalArgumentException("The " + fieldName + " cannot be empty.");
+        }
+        return value;
     }
 
     /** Marks the task at the one-based index in a {@code mark} command as done. */
