@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -24,8 +26,7 @@ public class Nova {
         System.out.println(SEPARATOR);
 
         Scanner scanner = new Scanner(System.in);
-        Task[] tasks = new Task[MAX_TASKS];
-        int taskCount = 0;
+        List<Task> tasks = new ArrayList<>();
 
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
@@ -39,23 +40,22 @@ public class Nova {
 
             if (command.equals("list")) {
                 System.out.println(" Here are the tasks in your list:");
-                for (int i = 0; i < taskCount; i++) {
-                    System.out.println(" " + (i + 1) + "." + tasks[i]);
+                for (int i = 0; i < tasks.size(); i++) {
+                    System.out.println(" " + (i + 1) + "." + tasks.get(i));
                 }
             } else if (command.startsWith("mark ")) {
-                markTask(command.substring(5), tasks, taskCount);
+                markTask(command.substring(5), tasks);
             } else if (command.startsWith("unmark ")) {
-                unmarkTask(command.substring(7), tasks, taskCount);
+                unmarkTask(command.substring(7), tasks);
             } else if (command.startsWith("delete ")) {
-                taskCount = deleteTask(command.substring(7), tasks, taskCount);
-            } else if (taskCount < MAX_TASKS) {
+                deleteTask(command.substring(7), tasks);
+            } else if (tasks.size() < MAX_TASKS) {
                 try {
                     Task task = parseTask(command);
-                    tasks[taskCount] = task;
-                    taskCount++;
+                    tasks.add(task);
                     System.out.println(" Got it. I've added this task:");
                     System.out.println("   " + task);
-                    System.out.println(" Now you have " + taskCount + " tasks in the list.");
+                    System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
                 } catch (IllegalArgumentException e) {
                     System.out.println(" OOPS!!! " + e.getMessage());
                 }
@@ -111,61 +111,55 @@ public class Nova {
     }
 
     /** Marks the task at the one-based index in a {@code mark} command as done. */
-    private static void markTask(String taskNumber, Task[] tasks, int taskCount) {
+    private static void markTask(String taskNumber, List<Task> tasks) {
         try {
             int index = Integer.parseInt(taskNumber) - 1;
-            if (index < 0 || index >= taskCount) {
+            if (index < 0 || index >= tasks.size()) {
                 System.out.println(" Task number is out of range.");
                 return;
             }
 
-            tasks[index].markAsDone();
+            tasks.get(index).markAsDone();
             System.out.println(" Nice! I've marked this task as done:");
-            System.out.println("   [X] " + tasks[index].getDescription());
+            System.out.println("   [X] " + tasks.get(index).getDescription());
         } catch (NumberFormatException e) {
             System.out.println(" Please provide a valid task number.");
         }
     }
 
     /** Marks the task at the one-based index in an {@code unmark} command as not done. */
-    private static void unmarkTask(String taskNumber, Task[] tasks, int taskCount) {
+    private static void unmarkTask(String taskNumber, List<Task> tasks) {
         try {
             int index = Integer.parseInt(taskNumber) - 1;
-            if (index < 0 || index >= taskCount) {
+            if (index < 0 || index >= tasks.size()) {
                 System.out.println(" Task number is out of range.");
                 return;
             }
 
-            tasks[index].markAsNotDone();
+            tasks.get(index).markAsNotDone();
             System.out.println(" OK, I've marked this task as not done yet:");
-            System.out.println("   [ ] " + tasks[index].getDescription());
+            System.out.println("   [ ] " + tasks.get(index).getDescription());
         } catch (NumberFormatException e) {
             System.out.println(" Please provide a valid task number.");
         }
     }
 
     /** Deletes the task at the one-based index in a {@code delete} command. */
-    private static int deleteTask(String taskNumber, Task[] tasks, int taskCount) {
+    private static void deleteTask(String taskNumber, List<Task> tasks) {
         try {
             int index = Integer.parseInt(taskNumber) - 1;
-            if (index < 0 || index >= taskCount) {
+            if (index < 0 || index >= tasks.size()) {
                 System.out.println(" Task number is out of range.");
-                return taskCount;
+                return;
             }
 
-            Task deletedTask = tasks[index];
-            for (int i = index; i < taskCount - 1; i++) {
-                tasks[i] = tasks[i + 1];
-            }
-            tasks[taskCount - 1] = null;
+            Task deletedTask = tasks.remove(index);
 
             System.out.println(" Noted. I've removed this task:");
             System.out.println("   " + deletedTask);
-            System.out.println(" Now you have " + (taskCount - 1) + " tasks in the list.");
-            return taskCount - 1;
+            System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
         } catch (NumberFormatException e) {
             System.out.println(" Please provide a valid task number.");
-            return taskCount;
         }
     }
 }
