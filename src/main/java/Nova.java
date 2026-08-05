@@ -46,6 +46,8 @@ public class Nova {
                 markTask(command.substring(5), tasks, taskCount);
             } else if (command.startsWith("unmark ")) {
                 unmarkTask(command.substring(7), tasks, taskCount);
+            } else if (command.startsWith("delete ")) {
+                taskCount = deleteTask(command.substring(7), tasks, taskCount);
             } else if (taskCount < MAX_TASKS) {
                 try {
                     Task task = parseTask(command);
@@ -139,6 +141,31 @@ public class Nova {
             System.out.println("   [ ] " + tasks[index].getDescription());
         } catch (NumberFormatException e) {
             System.out.println(" Please provide a valid task number.");
+        }
+    }
+
+    /** Deletes the task at the one-based index in a {@code delete} command. */
+    private static int deleteTask(String taskNumber, Task[] tasks, int taskCount) {
+        try {
+            int index = Integer.parseInt(taskNumber) - 1;
+            if (index < 0 || index >= taskCount) {
+                System.out.println(" Task number is out of range.");
+                return taskCount;
+            }
+
+            Task deletedTask = tasks[index];
+            for (int i = index; i < taskCount - 1; i++) {
+                tasks[i] = tasks[i + 1];
+            }
+            tasks[taskCount - 1] = null;
+
+            System.out.println(" Noted. I've removed this task:");
+            System.out.println("   " + deletedTask);
+            System.out.println(" Now you have " + (taskCount - 1) + " tasks in the list.");
+            return taskCount - 1;
+        } catch (NumberFormatException e) {
+            System.out.println(" Please provide a valid task number.");
+            return taskCount;
         }
     }
 }
