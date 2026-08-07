@@ -38,12 +38,7 @@ public class Nova {
                 if (parsedCommand.isExit()) {
                     break;
                 }
-                if (parsedCommand instanceof ListCommand) {
-                    continue;
-                }
-                if (parsedCommand instanceof AddCommand) {
-                    continue;
-                }
+                continue;
             }
 
             if (command.startsWith("mark ")) {
@@ -52,10 +47,6 @@ public class Nova {
                 }
             } else if (command.startsWith("unmark ")) {
                 if (unmarkTask(command.substring(7), tasks)) {
-                    storage.save(tasks.asList());
-                }
-            } else if (command.startsWith("delete ")) {
-                if (deleteTask(command.substring(7), tasks)) {
                     storage.save(tasks.asList());
                 }
             } else {
@@ -97,27 +88,6 @@ public class Nova {
             tasks.markAsNotDone(index);
             System.out.println(" OK, I've marked this task as not done yet:");
             System.out.println("   [ ] " + tasks.get(index).getDescription());
-            return true;
-        } catch (NumberFormatException e) {
-            System.out.println(" Please provide a valid task number.");
-            return false;
-        }
-    }
-
-    /** Deletes the task at the one-based index in a {@code delete} command. */
-    private static boolean deleteTask(String taskNumber, TaskList tasks) {
-        try {
-            int index = Integer.parseInt(taskNumber) - 1;
-            if (index < 0 || index >= tasks.size()) {
-                System.out.println(" Task number is out of range.");
-                return false;
-            }
-
-            Task deletedTask = tasks.remove(index);
-
-            System.out.println(" Noted. I've removed this task:");
-            System.out.println("   " + deletedTask);
-            System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
             return true;
         } catch (NumberFormatException e) {
             System.out.println(" Please provide a valid task number.");

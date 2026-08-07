@@ -13,6 +13,9 @@ public class Parser {
         if (command.equals("list")) {
             return new ListCommand();
         }
+        if (command.startsWith("delete ")) {
+            return new DeleteCommand(command.substring(7));
+        }
         if (command.startsWith("todo") || command.startsWith("deadline ") || command.startsWith("event ")) {
             return new AddCommand(parseTask(command));
         }
