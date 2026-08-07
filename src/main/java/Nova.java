@@ -27,6 +27,7 @@ public class Nova {
         ui.showWelcome();
         Scanner scanner = new Scanner(System.in);
         Storage storage = new Storage("data/duke.txt");
+        Parser parser = new Parser();
         List<Task> tasks = storage.load();
 
         while (scanner.hasNextLine()) {
@@ -58,7 +59,7 @@ public class Nova {
                 }
             } else if (tasks.size() < MAX_TASKS) {
                 try {
-                    Task task = parseTask(command);
+                    Task task = parser.parseTask(command);
                     tasks.add(task);
                     storage.save(tasks);
                     System.out.println(" Got it. I've added this task:");
