@@ -13,6 +13,9 @@ src/main/resources/docs/
 *.iml
 bin/
 
+# Runtime task storage
+/data/
+
 # Temp files
 _temp/
 
