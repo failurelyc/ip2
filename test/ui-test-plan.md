@@ -30,6 +30,12 @@ The runner reads the fenced JSON below. `program` is started once per test case.
       "inputs": ["list"],
       "expectedOutput": ["____________________________________________________________", " _   _  _____   ____   ", "| \\u005c | || ____| / ___|  ", "|  \\u005c| ||  _|   \\u005c___ \\u005c  ", "| |\\u005c  || |___   ___) | ", "|_| \\u005c_||_____| |____/  ", "Hello! I'm Nova.", "What can I do for you?", "____________________________________________________________", "____________________________________________________________", " Here are the tasks in your list:", " 1.[T][ ] second", "____________________________________________________________"]
     }
+    ,{
+      "name": "Deadlines parse and display typed dates",
+      "aim": "Verify that a deadline accepts a date and time and displays it in a readable format.",
+      "inputs": ["deadline return book /by 2/12/2019 1800"],
+      "expectedOutput": ["____________________________________________________________", " _   _  _____   ____   ", "| \\u005c | || ____| / ___|  ", "|  \\u005c| ||  _|   \\___ \\  ", "| |\\  || |___   ___) | ", "|_| \\_||_____| |____/  ", "Hello! I'm Nova.", "What can I do for you?", "____________________________________________________________", "____________________________________________________________", " Got it. I've added this task:", "   [D][ ] return book (by: Dec 02 2019 6:00 PM)", " Now you have 2 tasks in the list.", "____________________________________________________________"]
+    }
   ]
 }
 ```

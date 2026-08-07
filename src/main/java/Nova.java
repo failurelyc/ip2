@@ -5,6 +5,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.charset.StandardCharsets;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 /**
  * Runs Nova's command-line conversation.
@@ -86,7 +90,7 @@ public class Nova {
             int marker = body.indexOf(" /by ");
             if (marker >= 0) {
                 return new Deadline(requireDescription(body.substring(0, marker), "deadline"),
-                        requireValue(body.substring(marker + 5), "deadline"));
+                        parseDeadlineDate(requireValue(body.substring(marker + 5), "deadline")));
             }
             throw new IllegalArgumentException("A deadline needs a description and a /by date.");
         } else if (command.startsWith("event ")) {
@@ -120,6 +124,22 @@ public class Nova {
             throw new IllegalArgumentException("The " + fieldName + " cannot be empty.");
         }
         return value;
+    }
+
+    /** Parses supported deadline formats into a typed date/time value. */
+    private static LocalDateTime parseDeadlineDate(String value) {
+        try {
+            if (value.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                return LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay();
+            }
+            if (value.matches("\\d{1,2}/\\d{1,2}/\\d{4} \\d{4}")) {
+                return LocalDateTime.parse(value,
+                        DateTimeFormatter.ofPattern("d/M/yyyy HHmm"));
+            }
+        } catch (DateTimeParseException e) {
+            // Fall through to the user-friendly validation message below.
+        }
+        throw new IllegalArgumentException("The deadline must use yyyy-MM-dd or d/M/yyyy HHmm format.");
     }
 
     /** Marks the task at the one-based index in a {@code mark} command as done. */
@@ -230,7 +250,7 @@ public class Nova {
                 throw new IllegalArgumentException("Invalid deadline data.");
             }
             task = new Deadline(requireValue(fields[2], "deadline description"),
-                    requireValue(fields[3], "deadline date"));
+                    parseStoredDeadline(fields[3]));
             break;
         case "E":
             if (fields.length != 5) {
@@ -256,6 +276,15 @@ public class Nova {
             throw new IllegalArgumentException("Invalid task status.");
         }
         return task;
+    }
+
+    /** Parses the ISO date/time representation used in the task data file. */
+    private static LocalDateTime parseStoredDeadline(String value) {
+        try {
+            return LocalDateTime.parse(value);
+        } catch (DateTimeParseException e) {
+            return parseDeadlineDate(value);
+        }
     }
 
     /** Converts a task to the format used by the task data file. */
