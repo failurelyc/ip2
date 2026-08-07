@@ -1,3 +1,5 @@
+package nova.task;
+
 /** Represents a task occurring between a start and an end date or time. */
 public class Event extends Task {
     private final String from;

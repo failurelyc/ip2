@@ -1,3 +1,9 @@
+package nova.command;
+
+import nova.storage.Storage;
+import nova.task.TaskList;
+import nova.ui.Ui;
+
 /** Represents one executable command in Nova's command loop. */
 public abstract class Command {
     /** Executes this command using the application's collaborators. */

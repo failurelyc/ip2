@@ -1,3 +1,5 @@
+package nova.storage;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -8,6 +10,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+
+import nova.task.Deadline;
+import nova.task.Event;
+import nova.task.Task;
+import nova.task.Todo;
 
 /** Loads Nova tasks from disk and saves them back in a simple text format. */
 public class Storage {
@@ -108,7 +115,7 @@ public class Storage {
     }
 
     private static String formatForStorage(Task task) {
-        String status = task.isDone ? "1" : "0";
+        String status = task.isDone() ? "1" : "0";
         if (task instanceof Deadline deadline) {
             return "D | " + status + " | " + task.getDescription() + " | " + deadline.getBy();
         }

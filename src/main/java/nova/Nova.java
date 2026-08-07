@@ -1,4 +1,12 @@
+package nova;
+
 import java.util.Scanner;
+
+import nova.command.Command;
+import nova.parser.Parser;
+import nova.storage.Storage;
+import nova.task.TaskList;
+import nova.ui.Ui;
 
 /**
  * Runs Nova's command-line conversation.

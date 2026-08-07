@@ -1,3 +1,9 @@
+package nova.command;
+
+import nova.storage.Storage;
+import nova.task.TaskList;
+import nova.ui.Ui;
+
 /** Marks a numbered task as done and persists the change. */
 public class MarkCommand extends Command {
     private final String taskNumber;

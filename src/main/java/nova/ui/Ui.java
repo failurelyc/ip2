@@ -1,3 +1,5 @@
+package nova.ui;
+
 import java.util.Scanner;
 
 /** Handles Nova's direct interactions with the command-line user. */

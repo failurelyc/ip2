@@ -4,7 +4,7 @@ The runner reads the fenced JSON below. `program` is started once per test case.
 
 ```json
 {
-  "program": "java -cp out\\production\\ip2 Nova",
+  "program": "java -cp out\\production\\ip2 nova.Nova",
   "tests": [
     {
       "name": "Application starts and displays the greeting",

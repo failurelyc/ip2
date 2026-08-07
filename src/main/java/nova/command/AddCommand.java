@@ -1,3 +1,10 @@
+package nova.command;
+
+import nova.storage.Storage;
+import nova.task.Task;
+import nova.task.TaskList;
+import nova.ui.Ui;
+
 /** Adds a parsed task to Nova's list and persists the change. */
 public class AddCommand extends Command {
     private static final int MAX_TASKS = 100;

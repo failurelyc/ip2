@@ -1,3 +1,10 @@
+package nova.command;
+
+import nova.storage.Storage;
+import nova.task.Task;
+import nova.task.TaskList;
+import nova.ui.Ui;
+
 /** Removes a numbered task from Nova's list and persists the change. */
 public class DeleteCommand extends Command {
     private final String taskNumber;

@@ -1,3 +1,5 @@
+package nova.task;
+
 /**
  * Represents a task in Nova's task list.
  */
@@ -29,6 +31,11 @@ public class Task {
     /** Returns this task's description. */
     public String getDescription() {
         return description;
+    }
+
+    /** Returns whether this task has been marked as done. */
+    public boolean isDone() {
+        return isDone;
     }
 
     /** Returns the one-letter type marker used when displaying this task. */
