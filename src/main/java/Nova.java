@@ -1,6 +1,10 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.charset.StandardCharsets;
+import java.io.IOException;
 
 /**
  * Runs Nova's command-line conversation.
@@ -8,6 +12,7 @@ import java.util.Scanner;
 public class Nova {
     private static final int MAX_TASKS = 100;
     private static final String SEPARATOR = "____________________________________________________________";
+    private static final Path STORAGE_PATH = Path.of("data", "duke.txt");
 
     /**
      * Starts Nova, echoes each command, and exits when {@code bye} is entered.
@@ -26,7 +31,7 @@ public class Nova {
         System.out.println(SEPARATOR);
 
         Scanner scanner = new Scanner(System.in);
-        List<Task> tasks = new ArrayList<>();
+        List<Task> tasks = loadTasks();
 
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
@@ -44,15 +49,22 @@ public class Nova {
                     System.out.println(" " + (i + 1) + "." + tasks.get(i));
                 }
             } else if (command.startsWith("mark ")) {
-                markTask(command.substring(5), tasks);
+                if (markTask(command.substring(5), tasks)) {
+                    saveTasks(tasks);
+                }
             } else if (command.startsWith("unmark ")) {
-                unmarkTask(command.substring(7), tasks);
+                if (unmarkTask(command.substring(7), tasks)) {
+                    saveTasks(tasks);
+                }
             } else if (command.startsWith("delete ")) {
-                deleteTask(command.substring(7), tasks);
+                if (deleteTask(command.substring(7), tasks)) {
+                    saveTasks(tasks);
+                }
             } else if (tasks.size() < MAX_TASKS) {
                 try {
                     Task task = parseTask(command);
                     tasks.add(task);
+                    saveTasks(tasks);
                     System.out.println(" Got it. I've added this task:");
                     System.out.println("   " + task);
                     System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
@@ -111,46 +123,50 @@ public class Nova {
     }
 
     /** Marks the task at the one-based index in a {@code mark} command as done. */
-    private static void markTask(String taskNumber, List<Task> tasks) {
+    private static boolean markTask(String taskNumber, List<Task> tasks) {
         try {
             int index = Integer.parseInt(taskNumber) - 1;
             if (index < 0 || index >= tasks.size()) {
                 System.out.println(" Task number is out of range.");
-                return;
+                return false;
             }
 
             tasks.get(index).markAsDone();
             System.out.println(" Nice! I've marked this task as done:");
             System.out.println("   [X] " + tasks.get(index).getDescription());
+            return true;
         } catch (NumberFormatException e) {
             System.out.println(" Please provide a valid task number.");
+            return false;
         }
     }
 
     /** Marks the task at the one-based index in an {@code unmark} command as not done. */
-    private static void unmarkTask(String taskNumber, List<Task> tasks) {
+    private static boolean unmarkTask(String taskNumber, List<Task> tasks) {
         try {
             int index = Integer.parseInt(taskNumber) - 1;
             if (index < 0 || index >= tasks.size()) {
                 System.out.println(" Task number is out of range.");
-                return;
+                return false;
             }
 
             tasks.get(index).markAsNotDone();
             System.out.println(" OK, I've marked this task as not done yet:");
             System.out.println("   [ ] " + tasks.get(index).getDescription());
+            return true;
         } catch (NumberFormatException e) {
             System.out.println(" Please provide a valid task number.");
+            return false;
         }
     }
 
     /** Deletes the task at the one-based index in a {@code delete} command. */
-    private static void deleteTask(String taskNumber, List<Task> tasks) {
+    private static boolean deleteTask(String taskNumber, List<Task> tasks) {
         try {
             int index = Integer.parseInt(taskNumber) - 1;
             if (index < 0 || index >= tasks.size()) {
                 System.out.println(" Task number is out of range.");
-                return;
+                return false;
             }
 
             Task deletedTask = tasks.remove(index);
@@ -158,8 +174,100 @@ public class Nova {
             System.out.println(" Noted. I've removed this task:");
             System.out.println("   " + deletedTask);
             System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
+            return true;
         } catch (NumberFormatException e) {
             System.out.println(" Please provide a valid task number.");
+            return false;
         }
+    }
+
+    /** Saves the current task list in a simple, one-task-per-line format. */
+    private static void saveTasks(List<Task> tasks) {
+        List<String> lines = tasks.stream().map(Nova::formatForStorage).toList();
+        try {
+            Files.createDirectories(STORAGE_PATH.getParent());
+            Files.write(STORAGE_PATH, lines, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            System.out.println(" OOPS!!! I couldn't save your tasks to disk.");
+        }
+    }
+
+    /** Loads previously saved tasks, or starts with an empty list if no file exists. */
+    private static List<Task> loadTasks() {
+        List<Task> tasks = new ArrayList<>();
+        if (!Files.exists(STORAGE_PATH)) {
+            return tasks;
+        }
+
+        try {
+            for (String line : Files.readAllLines(STORAGE_PATH)) {
+                if (line.isBlank() || tasks.size() >= MAX_TASKS) {
+                    continue;
+                }
+                try {
+                    tasks.add(parseStoredTask(line));
+                } catch (IllegalArgumentException e) {
+                    // Ignore malformed lines so one bad entry does not prevent startup.
+                }
+            }
+        } catch (IOException e) {
+            System.out.println(" OOPS!!! I couldn't load your saved tasks.");
+        }
+        return tasks;
+    }
+
+    /** Converts one stored line back into its task subtype and completion status. */
+    private static Task parseStoredTask(String line) {
+        String[] fields = line.split("\\s*\\|\\s*", -1);
+        if (fields.length < 3) {
+            throw new IllegalArgumentException("Invalid task data.");
+        }
+
+        Task task;
+        switch (fields[0]) {
+        case "D":
+            if (fields.length != 4) {
+                throw new IllegalArgumentException("Invalid deadline data.");
+            }
+            task = new Deadline(requireValue(fields[2], "deadline description"),
+                    requireValue(fields[3], "deadline date"));
+            break;
+        case "E":
+            if (fields.length != 5) {
+                throw new IllegalArgumentException("Invalid event data.");
+            }
+            task = new Event(requireValue(fields[2], "event description"),
+                    requireValue(fields[3], "event start time"),
+                    requireValue(fields[4], "event end time"));
+            break;
+        case "T":
+            if (fields.length != 3) {
+                throw new IllegalArgumentException("Invalid todo data.");
+            }
+            task = new Todo(requireValue(fields[2], "todo description"));
+            break;
+        default:
+            throw new IllegalArgumentException("Unknown task type.");
+        }
+
+        if ("1".equals(fields[1])) {
+            task.markAsDone();
+        } else if (!"0".equals(fields[1])) {
+            throw new IllegalArgumentException("Invalid task status.");
+        }
+        return task;
+    }
+
+    /** Converts a task to the format used by the task data file. */
+    private static String formatForStorage(Task task) {
+        String status = task.isDone ? "1" : "0";
+        if (task instanceof Deadline deadline) {
+            return "D | " + status + " | " + task.getDescription() + " | " + deadline.getBy();
+        }
+        if (task instanceof Event event) {
+            return "E | " + status + " | " + task.getDescription() + " | "
+                    + event.getFrom() + " | " + event.getTo();
+        }
+        return "T | " + status + " | " + task.getDescription();
     }
 }

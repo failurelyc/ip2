@@ -23,6 +23,12 @@ The runner reads the fenced JSON below. `program` is started once per test case.
       "aim": "Verify that deleting a task removes it, shifts later tasks, and updates the task count.",
       "inputs": ["todo first", "todo second", "delete 1", "list"],
       "expectedOutput": ["____________________________________________________________", " _   _  _____   ____   ", "| \\u005c | || ____| / ___|  ", "|  \\u005c| ||  _|   \\___ \\  ", "| |\\  || |___   ___) | ", "|_| \\_||_____| |____/  ", "Hello! I'm Nova.", "What can I do for you?", "____________________________________________________________", "____________________________________________________________", " Got it. I've added this task:", "   [T][ ] first", " Now you have 1 tasks in the list.", "____________________________________________________________", "____________________________________________________________", " Got it. I've added this task:", "   [T][ ] second", " Now you have 2 tasks in the list.", "____________________________________________________________", "____________________________________________________________", " Noted. I've removed this task:", "   [T][ ] first", " Now you have 1 tasks in the list.", "____________________________________________________________", "____________________________________________________________", " Here are the tasks in your list:", " 1.[T][ ] second", "____________________________________________________________"]
+    },
+    {
+      "name": "Saved tasks are loaded on startup",
+      "aim": "Verify that a task saved by the previous test is available when Nova starts again.",
+      "inputs": ["list"],
+      "expectedOutput": ["____________________________________________________________", " _   _  _____   ____   ", "| \\u005c | || ____| / ___|  ", "|  \\u005c| ||  _|   \\u005c___ \\u005c  ", "| |\\u005c  || |___   ___) | ", "|_| \\u005c_||_____| |____/  ", "Hello! I'm Nova.", "What can I do for you?", "____________________________________________________________", "____________________________________________________________", " Here are the tasks in your list:", " 1.[T][ ] second", "____________________________________________________________"]
     }
   ]
 }
