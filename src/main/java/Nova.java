@@ -15,7 +15,6 @@ import java.time.format.DateTimeParseException;
  */
 public class Nova {
     private static final int MAX_TASKS = 100;
-    private static final String SEPARATOR = "____________________________________________________________";
     private static final Path STORAGE_PATH = Path.of("data", "duke.txt");
 
     /**
@@ -24,26 +23,18 @@ public class Nova {
      * @param args command-line arguments, which are not used
      */
     public static void main(String[] args) {
-        System.out.println(SEPARATOR);
-        String banner = " _   _  _____   ____   \n"
-                + "| \\ | || ____| / ___|  \n"
-                + "|  \\| ||  _|   \\___ \\  \n"
-                + "| |\\  || |___   ___) | \n"
-                + "|_| \\_||_____| |____/  \n";
-        System.out.print(banner);
-        System.out.println("Hello! I'm Nova.\nWhat can I do for you?");
-        System.out.println(SEPARATOR);
-
+        Ui ui = new Ui();
+        ui.showWelcome();
         Scanner scanner = new Scanner(System.in);
         List<Task> tasks = loadTasks();
 
         while (scanner.hasNextLine()) {
-            String command = scanner.nextLine();
-            System.out.println(SEPARATOR);
+            String command = ui.readCommand(scanner);
+            ui.showSeparator();
 
             if (command.equals("bye")) {
-                System.out.println("Bye. Hope to see you again soon!");
-                System.out.println(SEPARATOR);
+                ui.showGoodbye();
+                ui.showSeparator();
                 break;
             }
 
@@ -79,7 +70,7 @@ public class Nova {
                 System.out.println(" OOPS!!! Your task list is full.");
             }
 
-            System.out.println(SEPARATOR);
+            ui.showSeparator();
         }
     }
 
