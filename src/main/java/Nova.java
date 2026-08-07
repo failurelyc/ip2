@@ -28,7 +28,7 @@ public class Nova {
         Scanner scanner = new Scanner(System.in);
         Storage storage = new Storage("data/duke.txt");
         Parser parser = new Parser();
-        List<Task> tasks = storage.load();
+        TaskList tasks = new TaskList(storage.load());
 
         while (scanner.hasNextLine()) {
             String command = ui.readCommand(scanner);
@@ -47,21 +47,21 @@ public class Nova {
                 }
             } else if (command.startsWith("mark ")) {
                 if (markTask(command.substring(5), tasks)) {
-                    storage.save(tasks);
+                    storage.save(tasks.asList());
                 }
             } else if (command.startsWith("unmark ")) {
                 if (unmarkTask(command.substring(7), tasks)) {
-                    storage.save(tasks);
+                    storage.save(tasks.asList());
                 }
             } else if (command.startsWith("delete ")) {
                 if (deleteTask(command.substring(7), tasks)) {
-                    storage.save(tasks);
+                    storage.save(tasks.asList());
                 }
             } else if (tasks.size() < MAX_TASKS) {
                 try {
                     Task task = parser.parseTask(command);
                     tasks.add(task);
-                    storage.save(tasks);
+                    storage.save(tasks.asList());
                     System.out.println(" Got it. I've added this task:");
                     System.out.println("   " + task);
                     System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
@@ -136,7 +136,7 @@ public class Nova {
     }
 
     /** Marks the task at the one-based index in a {@code mark} command as done. */
-    private static boolean markTask(String taskNumber, List<Task> tasks) {
+    private static boolean markTask(String taskNumber, TaskList tasks) {
         try {
             int index = Integer.parseInt(taskNumber) - 1;
             if (index < 0 || index >= tasks.size()) {
@@ -144,7 +144,7 @@ public class Nova {
                 return false;
             }
 
-            tasks.get(index).markAsDone();
+            tasks.markAsDone(index);
             System.out.println(" Nice! I've marked this task as done:");
             System.out.println("   [X] " + tasks.get(index).getDescription());
             return true;
@@ -155,7 +155,7 @@ public class Nova {
     }
 
     /** Marks the task at the one-based index in an {@code unmark} command as not done. */
-    private static boolean unmarkTask(String taskNumber, List<Task> tasks) {
+    private static boolean unmarkTask(String taskNumber, TaskList tasks) {
         try {
             int index = Integer.parseInt(taskNumber) - 1;
             if (index < 0 || index >= tasks.size()) {
@@ -163,7 +163,7 @@ public class Nova {
                 return false;
             }
 
-            tasks.get(index).markAsNotDone();
+            tasks.markAsNotDone(index);
             System.out.println(" OK, I've marked this task as not done yet:");
             System.out.println("   [ ] " + tasks.get(index).getDescription());
             return true;
@@ -174,7 +174,7 @@ public class Nova {
     }
 
     /** Deletes the task at the one-based index in a {@code delete} command. */
-    private static boolean deleteTask(String taskNumber, List<Task> tasks) {
+    private static boolean deleteTask(String taskNumber, TaskList tasks) {
         try {
             int index = Integer.parseInt(taskNumber) - 1;
             if (index < 0 || index >= tasks.size()) {
