@@ -5,6 +5,11 @@ import java.time.format.DateTimeParseException;
 
 /** Converts raw user commands into typed tasks. */
 public class Parser {
+    /** Converts an exit command into its command object, or returns {@code null}. */
+    public Command parseCommand(String command) {
+        return command.equals("bye") ? new ExitCommand() : null;
+    }
+
     /** Parses a task-creation command. */
     public Task parseTask(String command) {
         if (command.startsWith("deadline ")) {

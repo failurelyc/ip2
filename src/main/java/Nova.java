@@ -24,10 +24,13 @@ public class Nova {
             String command = ui.readCommand(scanner);
             ui.showSeparator();
 
-            if (command.equals("bye")) {
-                ui.showGoodbye();
+            Command parsedCommand = parser.parseCommand(command);
+            if (parsedCommand != null) {
+                parsedCommand.execute(tasks, ui, storage);
                 ui.showSeparator();
-                break;
+                if (parsedCommand.isExit()) {
+                    break;
+                }
             }
 
             if (command.equals("list")) {
