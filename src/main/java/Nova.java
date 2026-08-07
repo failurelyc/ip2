@@ -24,7 +24,14 @@ public class Nova {
             String command = ui.readCommand(scanner);
             ui.showSeparator();
 
-            Command parsedCommand = parser.parseCommand(command);
+            Command parsedCommand;
+            try {
+                parsedCommand = parser.parseCommand(command);
+            } catch (IllegalArgumentException e) {
+                System.out.println(" OOPS!!! " + e.getMessage());
+                ui.showSeparator();
+                continue;
+            }
             if (parsedCommand != null) {
                 parsedCommand.execute(tasks, ui, storage);
                 ui.showSeparator();
@@ -32,6 +39,9 @@ public class Nova {
                     break;
                 }
                 if (parsedCommand instanceof ListCommand) {
+                    continue;
+                }
+                if (parsedCommand instanceof AddCommand) {
                     continue;
                 }
             }
@@ -48,19 +58,8 @@ public class Nova {
                 if (deleteTask(command.substring(7), tasks)) {
                     storage.save(tasks.asList());
                 }
-            } else if (tasks.size() < MAX_TASKS) {
-                try {
-                    Task task = parser.parseTask(command);
-                    tasks.add(task);
-                    storage.save(tasks.asList());
-                    System.out.println(" Got it. I've added this task:");
-                    System.out.println("   " + task);
-                    System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
-                } catch (IllegalArgumentException e) {
-                    System.out.println(" OOPS!!! " + e.getMessage());
-                }
             } else {
-                System.out.println(" OOPS!!! Your task list is full.");
+                System.out.println(" OOPS!!! I don't recognise that command. Try todo, deadline, event, list, mark, unmark, or bye.");
             }
 
             ui.showSeparator();

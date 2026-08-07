@@ -10,7 +10,13 @@ public class Parser {
         if (command.equals("bye")) {
             return new ExitCommand();
         }
-        return command.equals("list") ? new ListCommand() : null;
+        if (command.equals("list")) {
+            return new ListCommand();
+        }
+        if (command.startsWith("todo") || command.startsWith("deadline ") || command.startsWith("event ")) {
+            return new AddCommand(parseTask(command));
+        }
+        return null;
     }
 
     /** Parses a task-creation command. */
