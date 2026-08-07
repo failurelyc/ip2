@@ -7,7 +7,10 @@ import java.time.format.DateTimeParseException;
 public class Parser {
     /** Converts an exit command into its command object, or returns {@code null}. */
     public Command parseCommand(String command) {
-        return command.equals("bye") ? new ExitCommand() : null;
+        if (command.equals("bye")) {
+            return new ExitCommand();
+        }
+        return command.equals("list") ? new ListCommand() : null;
     }
 
     /** Parses a task-creation command. */
