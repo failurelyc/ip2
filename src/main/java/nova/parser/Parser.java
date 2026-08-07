@@ -66,7 +66,8 @@ public class Parser {
             String description = command.equals("todo") ? "" : command.substring(5);
             return new Todo(requireDescription(description, "todo"));
         }
-        throw new IllegalArgumentException("I don't recognise that command. Try todo, deadline, event, list, mark, unmark, or bye.");
+        throw new IllegalArgumentException("I don't recognise that command. Try todo, deadline, event, "
+                + "list, mark, unmark, or bye.");
     }
 
     private static String requireDescription(String value, String taskType) {

@@ -67,23 +67,32 @@ public class Storage {
         Task task;
         switch (fields[0]) {
         case "D":
-            if (fields.length != 4) throw new IllegalArgumentException("Invalid deadline data.");
+            if (fields.length != 4) {
+                throw new IllegalArgumentException("Invalid deadline data.");
+            }
             task = new Deadline(requireValue(fields[2], "deadline description"), parseStoredDeadline(fields[3]));
             break;
         case "E":
-            if (fields.length != 5) throw new IllegalArgumentException("Invalid event data.");
+            if (fields.length != 5) {
+                throw new IllegalArgumentException("Invalid event data.");
+            }
             task = new Event(requireValue(fields[2], "event description"),
                     requireValue(fields[3], "event start time"), requireValue(fields[4], "event end time"));
             break;
         case "T":
-            if (fields.length != 3) throw new IllegalArgumentException("Invalid todo data.");
+            if (fields.length != 3) {
+                throw new IllegalArgumentException("Invalid todo data.");
+            }
             task = new Todo(requireValue(fields[2], "todo description"));
             break;
         default:
             throw new IllegalArgumentException("Unknown task type.");
         }
-        if ("1".equals(fields[1])) task.markAsDone();
-        else if (!"0".equals(fields[1])) throw new IllegalArgumentException("Invalid task status.");
+        if ("1".equals(fields[1])) {
+            task.markAsDone();
+        } else if (!"0".equals(fields[1])) {
+            throw new IllegalArgumentException("Invalid task status.");
+        }
         return task;
     }
 
@@ -110,7 +119,9 @@ public class Storage {
     }
 
     private static String requireValue(String value, String fieldName) {
-        if (value.trim().isEmpty()) throw new IllegalArgumentException("The " + fieldName + " cannot be empty.");
+        if (value.trim().isEmpty()) {
+            throw new IllegalArgumentException("The " + fieldName + " cannot be empty.");
+        }
         return value;
     }
 

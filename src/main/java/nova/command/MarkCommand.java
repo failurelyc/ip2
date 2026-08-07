@@ -9,7 +9,9 @@ public class MarkCommand extends Command {
     private final String taskNumber;
 
     /** Creates a mark command for the supplied one-based task number. */
-    public MarkCommand(String taskNumber) { this.taskNumber = taskNumber; }
+    public MarkCommand(String taskNumber) {
+        this.taskNumber = taskNumber;
+    }
 
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
