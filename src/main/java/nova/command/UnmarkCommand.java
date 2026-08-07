@@ -9,7 +9,9 @@ public class UnmarkCommand extends Command {
     private final String taskNumber;
 
     /** Creates an unmark command for the supplied one-based task number. */
-    public UnmarkCommand(String taskNumber) { this.taskNumber = taskNumber; }
+    public UnmarkCommand(String taskNumber) {
+        this.taskNumber = taskNumber;
+    }
 
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {

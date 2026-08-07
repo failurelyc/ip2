@@ -13,23 +13,37 @@ public class TaskList {
     }
 
     /** Returns the number of tasks currently stored. */
-    public int size() { return tasks.size(); }
+    public int size() {
+        return tasks.size();
+    }
 
     /** Returns the task at the zero-based index. */
-    public Task get(int index) { return tasks.get(index); }
+    public Task get(int index) {
+        return tasks.get(index);
+    }
 
     /** Adds a task to the end of the list. */
-    public void add(Task task) { tasks.add(task); }
+    public void add(Task task) {
+        tasks.add(task);
+    }
 
     /** Marks the task at the zero-based index as done. */
-    public void markAsDone(int index) { tasks.get(index).markAsDone(); }
+    public void markAsDone(int index) {
+        tasks.get(index).markAsDone();
+    }
 
     /** Marks the task at the zero-based index as not done. */
-    public void markAsNotDone(int index) { tasks.get(index).markAsNotDone(); }
+    public void markAsNotDone(int index) {
+        tasks.get(index).markAsNotDone();
+    }
 
     /** Removes and returns the task at the zero-based index. */
-    public Task remove(int index) { return tasks.remove(index); }
+    public Task remove(int index) {
+        return tasks.remove(index);
+    }
 
     /** Returns a snapshot suitable for persistence. */
-    public List<Task> asList() { return new ArrayList<>(tasks); }
+    public List<Task> asList() {
+        return new ArrayList<>(tasks);
+    }
 }

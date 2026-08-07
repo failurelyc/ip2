@@ -46,7 +46,8 @@ public class Nova {
                 continue;
             }
 
-            System.out.println(" OOPS!!! I don't recognise that command. Try todo, deadline, event, list, mark, unmark, or bye.");
+            System.out.println(" OOPS!!! I don't recognise that command. Try todo, deadline, event, "
+                    + "list, mark, unmark, or bye.");
 
             ui.showSeparator();
         }
