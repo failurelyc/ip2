@@ -16,6 +16,12 @@ public class Parser {
         if (command.startsWith("delete ")) {
             return new DeleteCommand(command.substring(7));
         }
+        if (command.startsWith("mark ")) {
+            return new MarkCommand(command.substring(5));
+        }
+        if (command.startsWith("unmark ")) {
+            return new UnmarkCommand(command.substring(7));
+        }
         if (command.startsWith("todo") || command.startsWith("deadline ") || command.startsWith("event ")) {
             return new AddCommand(parseTask(command));
         }
