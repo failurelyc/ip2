@@ -26,7 +26,8 @@ public class Nova {
         Ui ui = new Ui();
         ui.showWelcome();
         Scanner scanner = new Scanner(System.in);
-        List<Task> tasks = loadTasks();
+        Storage storage = new Storage("data/duke.txt");
+        List<Task> tasks = storage.load();
 
         while (scanner.hasNextLine()) {
             String command = ui.readCommand(scanner);
@@ -45,21 +46,21 @@ public class Nova {
                 }
             } else if (command.startsWith("mark ")) {
                 if (markTask(command.substring(5), tasks)) {
-                    saveTasks(tasks);
+                    storage.save(tasks);
                 }
             } else if (command.startsWith("unmark ")) {
                 if (unmarkTask(command.substring(7), tasks)) {
-                    saveTasks(tasks);
+                    storage.save(tasks);
                 }
             } else if (command.startsWith("delete ")) {
                 if (deleteTask(command.substring(7), tasks)) {
-                    saveTasks(tasks);
+                    storage.save(tasks);
                 }
             } else if (tasks.size() < MAX_TASKS) {
                 try {
                     Task task = parseTask(command);
                     tasks.add(task);
-                    saveTasks(tasks);
+                    storage.save(tasks);
                     System.out.println(" Got it. I've added this task:");
                     System.out.println("   " + task);
                     System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
